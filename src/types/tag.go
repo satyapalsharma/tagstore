@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // Tag represents a tag that can be associated with files
 type Tag struct {
@@ -30,10 +33,10 @@ type FileTag struct {
 // Supported operators: AND (space), OR (|), NOT (-)
 // Example: "work -urgent | personal"
 type TagQuery struct {
-	Raw       string
-	Positive  []string // tags that must be present
-	Negative  []string // tags that must NOT be present
-	Optional  []string // tags that are nice to have (OR groups)
+	Raw      string
+	Positive []string // tags that must be present
+	Negative []string // tags that must NOT be present
+	Optional []string // tags that are nice to have (OR groups)
 }
 
 // NewTagQuery parses a raw query string into a structured TagQuery
@@ -43,7 +46,6 @@ func NewTagQuery(raw string) *TagQuery {
 		return q
 	}
 
-	// Simple tokenizer: split by spaces, handle | for OR, - for NOT
 	tokens := tokenize(raw)
 	for _, token := range tokens {
 		switch {
