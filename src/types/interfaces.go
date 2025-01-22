@@ -2,10 +2,12 @@ package types
 
 import (
 	"context"
+
 	"tagstore/src/models"
 )
 
 // TagRepository defines the interface for tag data operations
+type TagRepository interface {
 	Create(ctx context.Context, tag *models.Tag) error
 	GetByName(ctx context.Context, name string) (*models.Tag, error)
 	GetByID(ctx context.Context, id int64) (*models.Tag, error)
@@ -14,6 +16,7 @@ import (
 }
 
 // FileRepository defines the interface for file data operations
+type FileRepository interface {
 	Create(ctx context.Context, file *models.File) error
 	GetByPath(ctx context.Context, path string) (*models.File, error)
 	GetByID(ctx context.Context, id int64) (*models.File, error)
@@ -22,6 +25,7 @@ import (
 }
 
 // FileTagRepository defines the interface for file-tag relationship operations
+type FileTagRepository interface {
 	AddTag(ctx context.Context, fileID int64, tagID int64) error
 	RemoveTag(ctx context.Context, fileID int64, tagID int64) error
 	GetTagsForFile(ctx context.Context, fileID int64) ([]models.Tag, error)
