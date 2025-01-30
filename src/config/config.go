@@ -3,8 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-	"strconv"
+	"strings"
 
 	"tagstore/src/lib"
 )
