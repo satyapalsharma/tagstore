@@ -1,10 +1,7 @@
 package main
 
-import "net/http"
+import "tagstore/src/cli"
 
 func main() {
-  http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("OK"))
-  })
-  http.ListenAndServe(":8080", nil)
+	cli.Execute()
 }
