@@ -31,5 +31,6 @@ type FileTagRepository interface {
 	GetTagsForFile(ctx context.Context, fileID int64) ([]models.Tag, error)
 	GetFilesForTag(ctx context.Context, tagID int64) ([]models.File, error)
 	SearchFiles(ctx context.Context, query *TagQuery) ([]models.File, error)
+	SearchFilesByTags(ctx context.Context, tags []string, matchAll bool) ([]models.File, error)
 	HasTag(ctx context.Context, fileID int64, tagID int64) (bool, error)
 }
