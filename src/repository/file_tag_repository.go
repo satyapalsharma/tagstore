@@ -197,6 +197,83 @@ func (r *FileTagRepository) SearchFiles(ctx context.Context, query *types.TagQue
 	return files, nil
 }
 
+// SearchFilesByTags finds files that have all or any of the specified tags
+func (r *FileTagRepository) SearchFilesByTags(ctx context.Context, tags []string, matchAll bool) ([]models.File, error) {
+	if len(tags) == 0 {
+		return nil, fmt.Errorf("at least one tag is required")
+	}
+
+	// Trim tags and validate
+	trimmedTags := make([]string, len(tags))
+	for i, tag := range tags {
+		trimmed := strings.TrimSpace(tag)
+		if trimmed == "" {
+			return nil, fmt.Errorf("tag cannot be empty")
+		}
+		trimmedTags[i] = trimmed
+	}
+
+	var query string
+	var args []interface{}
+
+	placeholders := make([]string, len(trimmedTags))
+	for i := range trimmedTags {
+		placeholders[i] = "?"
+	}
+	inClause := strings.Join(placeholders, ",")
+
+	if matchAll {
+		// AND logic: file must have ALL tags
+		query = fmt.Sprintf(`
+			SELECT f.id, f.path, f.hash, f.created_at, f.updated_at
+			FROM files f
+			JOIN file_tags ft ON f.id = ft.file_id
+			JOIN tags t ON t.id = ft.tag_id
+			WHERE t.name IN (%s)
+			GROUP BY f.id
+			HAVING COUNT(DISTINCT t.id) = ?
+		`, inClause)
+
+		args = make([]interface{}, len(trimmedTags)+1)
+		for i, tag := range trimmedTags {
+			args[i] = tag
+		}
+		args[len(trimmedTags)] = len(trimmedTags)
+	} else {
+		// OR logic: file must have ANY tag
+		query = fmt.Sprintf(`
+			SELECT DISTINCT f.id, f.path, f.hash, f.created_at, f.updated_at
+			FROM files f
+			JOIN file_tags ft ON f.id = ft.file_id
+			JOIN tags t ON t.id = ft.tag_id
+			WHERE t.name IN (%s)
+			ORDER BY f.path
+		`, inClause)
+
+		args = make([]interface{}, len(trimmedTags))
+		for i, tag := range trimmedTags {
+			args[i] = tag
+		}
+	}
+
+	rows, err := r.db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to search files by tags: %w", err)
+	}
+	defer rows.Close()
+
+	var files []models.File
+	for rows.Next() {
+		var file models.File
+		if err := rows.Scan(&file.ID, &file.Path, &file.Hash, &file.CreatedAt, &file.UpdatedAt); err != nil {
+			return nil, fmt.Errorf("failed to scan file: %w", err)
+		}
+		files = append(files, file)
+	}
+
+	return files, nil
+}
+
 func (r *FileTagRepository) getAllFiles(ctx context.Context) ([]models.File, error) {
 	query := `SELECT id, path, hash, created_at, updated_at FROM files ORDER BY path`
 	rows, err := r.db.Query(query)
