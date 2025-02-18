@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"tagstore/src/lib"
 	"tagstore/src/repository"
-	"tagstore/src/types"
 )
 
 // SearchService provides business logic for search operations
@@ -51,6 +51,28 @@ func (s *SearchService) SearchFiles(ctx context.Context, queryStr string) ([]str
 	}
 
 	s.logger.Info("Found %d files matching query", len(paths))
+	return paths, nil
+}
+
+// SearchFilesByTags searches for files matching the given tags with AND/OR logic
+func (s *SearchService) SearchFilesByTags(ctx context.Context, tags []string, matchAll bool) ([]string, error) {
+	if len(tags) == 0 {
+		return nil, lib.BadRequestError("at least one tag is required", nil)
+	}
+
+	files, err := s.fileTagRepo.SearchFilesByTags(ctx, tags, matchAll)
+	if err != nil {
+		s.logger.Error("Search by tags failed: %v", err)
+		return nil, lib.InternalError("search by tags failed", err)
+	}
+
+	paths := make([]string, len(files))
+	for i, file := range files {
+		paths[i] = file.Path
+	}
+
+	sort.Strings(paths)
+	s.logger.Info("Found %d files matching tags", len(paths))
 	return paths, nil
 }
 
