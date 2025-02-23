@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"csv"
 	"database/sql"
 	"fmt"
 	"os"
