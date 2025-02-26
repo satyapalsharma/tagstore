@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -38,7 +37,6 @@ func main() {
 	}
 	defer db.Close()
 
-	ctx := context.Background()
 	paths, err := commands.ListFilesForTag(db, tagName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
