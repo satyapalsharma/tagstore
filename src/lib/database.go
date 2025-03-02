@@ -69,6 +69,11 @@ func (d *DB) Close() error {
 	return nil
 }
 
+// DB returns the underlying *sql.DB
+func (d *DB) DB() *sql.DB {
+	return d.db
+}
+
 // Exec executes a query without returning rows
 func (d *DB) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return d.db.Exec(query, args...)
