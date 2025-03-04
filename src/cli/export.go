@@ -2,7 +2,7 @@ package cli
 
 import (
 	"context"
-	"csv"
+	"encoding/csv"
 	"database/sql"
 	"fmt"
 	"os"
