@@ -3,86 +3,61 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"os"
-	"path/filepath"
 
-	_ "modernc.org/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-// DB wraps the database connection by embedding *sql.DB.
+// DB wraps the database connection
 type DB struct {
-	*sql.DB
+	conn *sql.DB
 }
 
-// InitDB initializes the SQLite database connection and creates the schema.
-func InitDB(dbPath string) (*DB, error) {
-	if dbPath == "" {
-		dbPath = "tags.db"
-	}
-
-	// Ensure the directory of dbPath exists.
-	dir := filepath.Dir(dbPath)
-	if dir != "." {
-		if err := os.MkdirAll(dir, 0700); err != nil {
-			return nil, fmt.Errorf("init db: failed to create directory %s: %w", dir, err)
-		}
-	}
-
-	// Open the SQLite database using modernc.org/sqlite with foreign keys enabled.
-	dsn := fmt.Sprintf("file:%s?_pragma=foreign_keys(1)", dbPath)
-	sqlDB, err := sql.Open("sqlite", dsn)
+// InitDB initializes the SQLite database connection and creates tables
+func InitDB(dbPath string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
-		return nil, fmt.Errorf("init db: %w", err)
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Set max open connections to 1 to avoid SQLite locking issues.
-	sqlDB.SetMaxOpenConns(1)
+	if _, err := db.Exec("PRAGMA journal_mode=WAL"); err != nil {
+		return nil, fmt.Errorf("failed to enable WAL mode: %w", err)
+	}
 
-	// Wrap the connection.
-	db := &DB{DB: sqlDB}
+	if _, err := db.Exec("PRAGMA foreign_keys=ON"); err != nil {
+		return nil, fmt.Errorf("failed to enable foreign keys: %w", err)
+	}
 
-	// Create tables.
-	if err := db.createTables(); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("init db: %w", err)
+	createTables := `
+	CREATE TABLE IF NOT EXISTS files (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		path TEXT NOT NULL UNIQUE,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+	CREATE TABLE IF NOT EXISTS tags (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL UNIQUE,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+	CREATE TABLE IF NOT EXISTS file_tags (
+		file_id INTEGER NOT NULL,
+		tag_id INTEGER NOT NULL,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (file_id, tag_id),
+		FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE,
+		FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+	);`
+
+	if _, err := db.Exec(createTables); err != nil {
+		return nil, fmt.Errorf("failed to create tables: %w", err)
 	}
 
 	return db, nil
 }
 
-// Close closes the database connection.
+// Close closes the database connection
 func (d *DB) Close() error {
-	if d.DB != nil {
-		return d.DB.Close()
+	if d.conn != nil {
+		return d.conn.Close()
 	}
-	return nil
-}
-
-func (d *DB) createTables() error {
-	tagTable := `
-	CREATE TABLE IF NOT EXISTS tags (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT UNIQUE NOT NULL
-	)`
-
-	fileTable := `
-	CREATE TABLE IF NOT EXISTS files (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		path TEXT UNIQUE NOT NULL
-	)`
-
-	fileTagTable := `
-	CREATE TABLE IF NOT EXISTS file_tags (
-		file_id INTEGER NOT NULL REFERENCES files(id) ON DELETE CASCADE,
-		tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
-		PRIMARY KEY (file_id, tag_id)
-	)`
-
-	for _, stmt := range []string{tagTable, fileTable, fileTagTable} {
-		if _, err := d.Exec(stmt); err != nil {
-			return fmt.Errorf("create tables: %w", err)
-		}
-	}
-
 	return nil
 }

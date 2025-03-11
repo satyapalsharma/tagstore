@@ -1,0 +1,4 @@
+
+# GitForge internal tempfiles
+.gitforge_*.msg
+.gitforge_*.tmp
