@@ -6,40 +6,22 @@ import (
 
 	"tagstore/internal/commands"
 	"tagstore/internal/db"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		printUsage()
+	if len(os.Args) < 3 || os.Args[1] != "list-files" {
+		fmt.Fprintf(os.Stderr, "Usage: %s list-files <tag>\n", os.Args[0])
 		os.Exit(1)
 	}
 
-	command := os.Args[1]
-	args := os.Args[2:]
-
-	switch command {
-	case "remove":
-		handleRemove(args)
-	default:
-		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
-		printUsage()
-		os.Exit(1)
-	}
-}
-
-func printUsage() {
-	fmt.Fprintf(os.Stderr, "Usage: tag <command> [args...]\n")
-	fmt.Fprintf(os.Stderr, "Commands: remove\n")
-}
-
-func handleRemove(args []string) {
-	if len(args) != 2 {
-		fmt.Fprintf(os.Stderr, "Usage: tag remove <file> <tag>\n")
+	if len(os.Args) != 3 {
+		fmt.Fprintf(os.Stderr, "Usage: %s list-files <tag>\n", os.Args[0])
 		os.Exit(1)
 	}
 
-	filePath := args[0]
-	tagName := args[1]
+	tagName := os.Args[2]
 
 	dbPath, err := db.DefaultDBPath()
 	if err != nil {
@@ -47,17 +29,20 @@ func handleRemove(args []string) {
 		os.Exit(1)
 	}
 
-	sqlDB, err := db.Connect(dbPath)
+	db, err := db.Connect(dbPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
-	defer sqlDB.Close()
+	defer db.Close()
 
-	if err := commands.RemoveTag(sqlDB, filePath, tagName); err != nil {
+	paths, err := commands.ListFilesForTag(db, tagName)
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("Removed tag \"%s\" from file \"%s\"\n", tagName, filePath)
+	for _, path := range paths {
+		fmt.Println(path)
+	}
 }
