@@ -69,8 +69,8 @@ func (d *DB) Close() error {
 	return nil
 }
 
-// DB returns the underlying *sql.DB
-func (d *DB) DB() *sql.DB {
+// RawDB returns the underlying *sql.DB instance
+func (d *DB) RawDB() *sql.DB {
 	return d.db
 }
 
