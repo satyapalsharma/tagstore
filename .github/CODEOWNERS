@@ -1,0 +1,21 @@
+# Default owners for everything
+*                       @project-author
+
+# Source code ownership
+/src/                    @project-author
+/internal/              @project-author
+/cmd/                   @project-author
+/src/**                 @project-author
+/internal/**            @project-author
+/cmd/**                 @project-author
+
+# Configuration and docs
+/.github/               @project-author
+/*.md                   @project-author
+/.editorconfig          @project-author
+/.gitignore             @project-author
+/.dockerignore          @project-author
+/.vscode/               @project-author
+
+# Security
+/SECURITY.md            @project-author
