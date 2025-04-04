@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+vendor/
+
+# Git
+.git
+.gitignore
+
+# Build artifacts
+dist/
+build/
+bin/
+
+# Environment files
+.env
+.env.*
+.env.local
+
+# Test and coverage
+coverage/
+*.test
+*.out
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Documentation build
+docs/
+
+# Temporary files
+*.tmp
+*.swp
+*~
