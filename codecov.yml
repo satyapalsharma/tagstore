@@ -1,0 +1,27 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 1%
+        threshold: 1%
+    patch:
+      default:
+        target: 5%
+        threshold: 5%
+
+ignore:
+  - "*_test.go"
+  - "**/*_test.go"
+  - "**/test/**"
+  - "**/tests/**"
+  - "**/*config*"
+  - "**/*mock*"
+  - "**/mocks/**"
+  - "**/internal/**"
+  - "**/cmd/**"
+  - "**/vendor/**"
+
+comment:
+  layout: "header, diff, flags, files"
+  behavior: default
+  require_changes: false
