@@ -1,0 +1,29 @@
+# Auto-detect text files and normalize line endings
+text=auto
+
+# Enforce LF for source files
+*.go text eol=lf
+
+# Enforce LF for markdown and YAML
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files should not be modified
+*.sqlite binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Linguist hints
+*.go linguist-language=Go
+*.md linguist-documentation
+*.yml linguist-data
+*.yaml linguist-data
+Makefile linguist-build
+*.sql linguist-database
