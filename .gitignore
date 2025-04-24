@@ -50,3 +50,12 @@ coverage.html
 # GitForge internal tempfiles
 .gitforge_*.msg
 .gitforge_*.tmp
+node_modules/
+.next/
+.turbo/
+.vercel/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
