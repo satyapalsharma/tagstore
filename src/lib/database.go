@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
-
-	"tagstore/src/models"
 
 	_ "github.com/mattn/go-sqlite3"
 )
