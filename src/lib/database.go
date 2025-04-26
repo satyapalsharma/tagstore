@@ -14,10 +14,7 @@ type DB struct {
 	db *sql.DB
 }
 
-var (
-	instance *DB
-	once     sync.Once
-)
+var instance *DB
 
 // Connect initializes the SQLite database connection
 func Connect(dbPath string) (*DB, error) {
