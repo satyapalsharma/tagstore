@@ -47,8 +47,8 @@ func Connect(dbPath string) (*DB, error) {
 	return instance, nil
 }
 
-// Get returns the singleton database instance
-func Get() (*DB, error) {
+// GetDB returns the singleton database instance
+func GetDB() (*DB, error) {
 	if instance == nil {
 		return nil, fmt.Errorf("database not initialized")
 	}
