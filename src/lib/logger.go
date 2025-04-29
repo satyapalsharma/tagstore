@@ -45,6 +45,14 @@ func New(level Level) *Logger {
 }
 
 
+// Get returns the default logger.
+func Get() *Logger {
+	if defaultLogger == nil {
+		Init(LevelInfo)
+	}
+	return defaultLogger
+}
+
 // Debug logs a debug message
 func (l *Logger) Debug(msg string, args ...interface{}) {
 	if l.level <= LevelDebug {
