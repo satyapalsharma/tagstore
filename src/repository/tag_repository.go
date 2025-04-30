@@ -99,7 +99,3 @@ func (r *TagRepository) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func isUniqueConstraintError(err error) bool {
-	return err != nil && (err.Error() == "UNIQUE constraint failed: tags.name" ||
-		err.Error() == "constraint failed")
-}

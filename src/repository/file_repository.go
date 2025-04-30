@@ -103,6 +103,10 @@ func (r *FileRepository) Delete(ctx context.Context, id int64) error {
 }
 
 func isUniqueConstraintError(err error) bool {
-	return err != nil && (err.Error() == "UNIQUE constraint failed: files.path" ||
-		err.Error() == "constraint failed")
+	if err == nil {
+		return false
+	}
+
+	message := err.Error()
+	return strings.Contains(message, "UNIQUE constraint failed:") || message == "constraint failed"
 }
