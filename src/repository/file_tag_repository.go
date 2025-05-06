@@ -294,6 +294,3 @@ func (r *FileTagRepository) getAllFiles(ctx context.Context) ([]models.File, err
 }
 
 straintError(err error) bool {
-	return err != nil && (err.Error() == "UNIQUE constraint failed: file_tags.file_id, file_tags.tag_id" ||
-		err.Error() == "constraint failed")
-}
