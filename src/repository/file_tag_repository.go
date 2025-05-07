@@ -293,4 +293,4 @@ func (r *FileTagRepository) getAllFiles(ctx context.Context) ([]models.File, err
 	return files, nil
 }
 
-straintError(err error) bool {
+
