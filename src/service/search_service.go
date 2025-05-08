@@ -7,6 +7,7 @@ import (
 
 	"tagstore/src/lib"
 	"tagstore/src/repository"
+	"tagstore/src/types"
 )
 
 // SearchService provides business logic for search operations
