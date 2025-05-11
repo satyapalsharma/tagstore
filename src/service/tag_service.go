@@ -2,12 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"tagstore/src/lib"
 	"tagstore/src/models"
 	"tagstore/src/repository"
-	"tagstore/src/types"
 )
 
 // TagService provides business logic for tag operations
