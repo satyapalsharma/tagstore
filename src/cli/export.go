@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"context"
 	"encoding/csv"
 	"database/sql"
 	"fmt"
