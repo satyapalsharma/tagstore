@@ -18,9 +18,7 @@ var exportCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		outputPath := args[0]
-		ctx := context.Background()
-
-		if err := ExportToCSV(db.DB(), outputPath); err != nil {
+		if err := ExportToCSV(db.RawDB(), outputPath); err != nil {
 			lib.Get().Error("Failed to export tags: %v", err)
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
