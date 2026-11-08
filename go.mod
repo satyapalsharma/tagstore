@@ -3,7 +3,7 @@ module tagstore
 go 1.23.4
 
 require (
-	github.com/mattn/go-sqlite3 v1.14.49
+	github.com/mattn/go-sqlite3 v1.14.53
 	github.com/spf13/cobra v1.10.2
 )
 
